@@ -1,4 +1,4 @@
-package sonyflake
+package snooflake
 
 import (
 	"fmt"
@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/deckarep/golang-set"
+	mapset "github.com/deckarep/golang-set"
 )
 
-var sf *Sonyflake
+var sf *Snooflake
 
 var startTime int64
 var machineID uint64
@@ -18,12 +18,12 @@ func init() {
 	var st Settings
 	st.StartTime = time.Now()
 
-	sf = NewSonyflake(st)
+	sf = NewSnooflake(st)
 	if sf == nil {
-		panic("sonyflake not created")
+		panic("snooflake not created")
 	}
 
-	startTime = toSonyflakeTime(st.StartTime)
+	startTime = toSnooflakeTime(st.StartTime)
 
 	ip, _ := lower16BitPrivateIP()
 	machineID = uint64(ip)
@@ -37,7 +37,7 @@ func nextID(t *testing.T) uint64 {
 	return id
 }
 
-func TestSonyflakeOnce(t *testing.T) {
+func TestSnooflakeOnce(t *testing.T) {
 	sleepTime := uint64(50)
 	time.Sleep(time.Duration(sleepTime) * 10 * time.Millisecond)
 
@@ -64,15 +64,15 @@ func TestSonyflakeOnce(t *testing.T) {
 		t.Errorf("unexpected machine id: %d", actualMachineID)
 	}
 
-	fmt.Println("sonyflake id:", id)
+	fmt.Println("snooflake id:", id)
 	fmt.Println("decompose:", parts)
 }
 
 func currentTime() int64 {
-	return toSonyflakeTime(time.Now())
+	return toSnooflakeTime(time.Now())
 }
 
-func TestSonyflakeFor10Sec(t *testing.T) {
+func TestSnooflakeFor10Sec(t *testing.T) {
 	var numID uint32
 	var lastID uint64
 	var maxSequence uint64
@@ -120,7 +120,7 @@ func TestSonyflakeFor10Sec(t *testing.T) {
 	fmt.Println("number of id:", numID)
 }
 
-func TestSonyflakeInParallel(t *testing.T) {
+func TestSnooflakeInParallel(t *testing.T) {
 	numCPU := runtime.NumCPU()
 	runtime.GOMAXPROCS(numCPU)
 	fmt.Println("number of cpu:", numCPU)
@@ -138,7 +138,6 @@ func TestSonyflakeInParallel(t *testing.T) {
 	for i := 0; i < numGenerator; i++ {
 		go generate()
 	}
-
 	set := mapset.NewSet()
 	for i := 0; i < numID*numGenerator; i++ {
 		id := <-consumer
@@ -151,32 +150,32 @@ func TestSonyflakeInParallel(t *testing.T) {
 	fmt.Println("number of id:", set.Cardinality())
 }
 
-func TestNilSonyflake(t *testing.T) {
+func TestNilSnooflake(t *testing.T) {
 	var startInFuture Settings
 	startInFuture.StartTime = time.Now().Add(time.Duration(1) * time.Minute)
-	if NewSonyflake(startInFuture) != nil {
-		t.Errorf("sonyflake starting in the future")
+	if NewSnooflake(startInFuture) != nil {
+		t.Errorf("snooflake starting in the future")
 	}
 
 	var noMachineID Settings
 	noMachineID.MachineID = func() (uint16, error) {
 		return 0, fmt.Errorf("no machine id")
 	}
-	if NewSonyflake(noMachineID) != nil {
-		t.Errorf("sonyflake with no machine id")
+	if NewSnooflake(noMachineID) != nil {
+		t.Errorf("snooflake with no machine id")
 	}
 
 	var invalidMachineID Settings
 	invalidMachineID.CheckMachineID = func(uint16) bool {
 		return false
 	}
-	if NewSonyflake(invalidMachineID) != nil {
-		t.Errorf("sonyflake with invalid machine id")
+	if NewSnooflake(invalidMachineID) != nil {
+		t.Errorf("snooflake with invalid machine id")
 	}
 }
 
 func pseudoSleep(period time.Duration) {
-	sf.startTime -= int64(period) / sonyflakeTimeUnit
+	sf.startTime -= int64(period) / snooflakeTimeUnit
 }
 
 func TestNextIDError(t *testing.T) {
