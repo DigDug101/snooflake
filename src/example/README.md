@@ -1,7 +1,7 @@
 Example
 =======
 
-This example runs Sonyflake on AWS Elastic Beanstalk.
+This example runs Snooflake on AWS Elastic Beanstalk.
 
 Setup
 -----
@@ -12,7 +12,7 @@ Setup
   cd $GOROOT/src && GOOS=linux GOARCH=amd64 ./make.bash
   ```
 
-2. Build sonyflake_server in the example directory.
+2. Build snooflake_server in the example directory.
 
   ```
   ./linux64_build.sh

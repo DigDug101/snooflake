@@ -1,0 +1,6 @@
+hash: b4430b4d57ad863baac0afbc356e8f3021f31b051c94d7fdd2e0b2707932ff53
+updated: 2017-09-14T14:18:22.833685632-07:00
+imports: []
+testImports:
+- name: github.com/deckarep/golang-set
+  version: fc8930a5e645572ee00bf66358ed3414f3c13b90

@@ -4,18 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/sony/sonyflake"
-	"github.com/sony/sonyflake/awsutil"
+	"awsutil"
+	"snooflake"
 )
 
-var sf *sonyflake.Sonyflake
+var sf *snooflake.Snooflake
 
 func init() {
-	var st sonyflake.Settings
+	var st snooflake.Settings
 	st.MachineID = awsutil.AmazonEC2MachineID
-	sf = sonyflake.NewSonyflake(st)
+	sf = snooflake.NewSnooflake(st)
 	if sf == nil {
-		panic("sonyflake not created")
+		panic("snooflake not created")
 	}
 }
 
@@ -26,7 +26,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := json.Marshal(sonyflake.Decompose(id))
+	body, err := json.Marshal(snooflake.Decompose(id))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

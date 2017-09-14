@@ -1,0 +1,5 @@
+package: .
+import: []
+testImport:
+- package: github.com/deckarep/golang-set
+  version: ^1.6.0

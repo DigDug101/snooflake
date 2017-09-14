@@ -1,4 +1,4 @@
-// Package awsutil provides utility functions for using Sonyflake on AWS.
+// Package awsutil provides utility functions for using Snooflake on AWS.
 package awsutil
 
 import (
