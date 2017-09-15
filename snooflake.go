@@ -90,7 +90,7 @@ func (sf *Snooflake) NextIDs(num int) ([]uint64, error) {
 		if err != nil {
 			return ids, err
 		}
-		ids = append(ids, id)
+		ids[i] = id
 	}
 	return ids, nil
 }
