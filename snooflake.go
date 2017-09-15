@@ -81,13 +81,31 @@ func NewSnooflake(st Settings) *Snooflake {
 	return sf
 }
 
+func (sf *Snooflake) NextIDs(num int) ([]uint64, error) {
+	sf.mutex.Lock()
+	defer sf.mutex.Unlock()
+	ids := make([]uint64, num)
+	for i := 0; i < num; i++ {
+		id, err := sf.nextID()
+		if err != nil {
+			return ids, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, nil
+}
+
 // NextID generates a next unique ID.
 // After the Snooflake time overflows, NextID returns an error.
 func (sf *Snooflake) NextID() (uint64, error) {
-	const maskSequence = uint16(1<<BitLenSequence - 1)
-
 	sf.mutex.Lock()
 	defer sf.mutex.Unlock()
+	return sf.nextID()
+}
+
+// Not thread safe
+func (sf *Snooflake) nextID() (uint64, error) {
+	const maskSequence = uint16(1<<BitLenSequence - 1)
 
 	current := currentElapsedTime(sf.startTime)
 	if sf.elapsedTime < current {
@@ -105,7 +123,7 @@ func (sf *Snooflake) NextID() (uint64, error) {
 	return sf.toID()
 }
 
-const snooflakeTimeUnit = 1e7 // nsec, i.e. 10 msec
+const snooflakeTimeUnit = 1e6 // 1 msec
 
 func toSnooflakeTime(t time.Time) int64 {
 	return t.UTC().UnixNano() / snooflakeTimeUnit
@@ -116,7 +134,7 @@ func currentElapsedTime(startTime int64) int64 {
 }
 
 func sleepTime(overtime int64) time.Duration {
-	return time.Duration(overtime)*10*time.Millisecond -
+	return time.Duration(overtime)*1*time.Millisecond -
 		time.Duration(time.Now().UTC().UnixNano()%snooflakeTimeUnit)*time.Nanosecond
 }
 
